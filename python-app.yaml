@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-app-service
+spec:
+  type: NodePort # Uygulamaya Minikube dışından (tarayıcından) erişebilmek için
+  selector:
+    app: python-app
+  ports:
+    - port: 80
+      targetPort: 5000 # Python (örn. Flask) uygulamasının çalıştığı port
+      nodePort: 30000  # Tarayıcıdan erişeceğin sabit port (30000-32767 arası olmalı)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app-deployment
+spec:
+  replicas: 2 # Uygulamanın 2 kopyası (pod) aynı anda çalışsın
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      containers:
+        - name: python-app
+          image: my-python-app:latest # Kendi hazırlayacağın Docker imajının adı
+          imagePullPolicy: Never      # Minikube'ün lokalindeki Docker imajını kullanması için
+          env:
+            - name: DB_HOST
+              value: "postgres-service" # Bu gizli bir bilgi değil, düz metin kalabilir
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: database
+          ports:
+            - containerPort: 5000
