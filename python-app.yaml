@@ -27,8 +27,9 @@ spec:
     spec:
       containers:
         - name: python-app
-          image: my-python-app:latest # Kendi hazırlayacağın Docker imajının adı
-          imagePullPolicy: Never      # Minikube'ün lokalindeki Docker imajını kullanması için
+          image: containers:
+        - name: python-app
+          image: senin-dockerhub-kullanici-adin/python-k8s-app:latest
           env:
             - name: DB_HOST
               value: "postgres-service" # Bu gizli bir bilgi değil, düz metin kalabilir
