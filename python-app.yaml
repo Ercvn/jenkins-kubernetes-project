@@ -27,8 +27,6 @@ spec:
     spec:
       containers:
         - name: python-app
-          image: containers:
-        - name: python-app
           image: senin-dockerhub-kullanici-adin/python-k8s-app:latest
           env:
             - name: DB_HOST
