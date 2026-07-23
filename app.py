@@ -26,7 +26,7 @@ def hello():
         cur.close()
         conn.close()
         
-        return f"<h1>Merhaba Kubernetes!</h1><p>Veritabanı bağlantısı BAŞARILI: {db_version[0]}</p>"
+        return f"<h1>Merhaba Kubernetes!</h1><p>Veritabanı bağlantısı BAŞARILI: {db_version[0]}</p>. Webhook Başarılı."
     except Exception as e:
         return f"<h1>Hata!</h1><p>Veritabanına bağlanılamadı: {e}</p>"
 
