@@ -30,11 +30,24 @@ pipeline {
             }
         }
         
-        stage('4. Kubernetes\'e Dağıt (CD)') {
+        stage('GitOps - YAML Guncelle') {
             steps {
-                // Jenkins'e yüklediğimiz config dosyasını kullanarak K8s'e bağlanıyoruz
-                withKubeConfig(credentialsId: 'k8s-config') {
-                    sh "kubectl set image deployment/python-app-deployment python-app=${IMAGE_NAME}:${TAG}"
+                withCredentials([usernamePassword(credentialsId: 'github-auth', passwordVariable: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME')]) {
+                    sh '''
+                    # 1. Jenkins'in kendini Git'e tanıtması
+                    git config user.name "Jenkins GitOps"
+                    git config user.email "jenkins@local.com"
+
+                    # 2. k8s/python-app.yaml içindeki eski imaj versiyonunu yeni Build Numarası ile değiştir
+                    sed -i "s|image: ercvn/python-k8s-app:.*|image: ercvn/python-k8s-app:${BUILD_NUMBER}|g" k8s/python-app.yaml
+
+                    # 3. Değişiklikleri onayla
+                    git add k8s/python-app.yaml
+                    git commit -m "CD: İmaj versiyonu ${BUILD_NUMBER} olarak güncellendi"
+
+                    # 4. GitHub'a geri yolla 
+                    git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/ercvn/jenkins-kubernetes-project.git HEAD:main
+                    '''
                 }
             }
         }
