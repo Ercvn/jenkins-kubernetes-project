@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: python-app
-          image: ercvn/python-k8s-app:24
+          image: ercvn/python-k8s-app:25
           env:
             - name: DB_HOST
               value: "postgres-service" # Bu gizli bir bilgi değil, düz metin kalabilir
